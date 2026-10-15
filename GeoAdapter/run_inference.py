@@ -15,6 +15,7 @@ from dataset.GAMa import Patchify, input_transform_q, input_transform
 import pandas as pd
 import time
 from tqdm import tqdm
+from pathlib import Path
 
 class InferenceDL(torch.utils.data.Dataset):
     def __init__(self, grd_root, aerial_grd_root, aerial_root, city):
@@ -69,7 +70,7 @@ class UnNormalize(object):
 #                                std=[0.229, 0.224, 0.225])
 
 def load_checkpoint(model, img_size, ckpt_path):
-    checkpoint = torch.load(ckpt_path, map_location='cpu')['state_dict']
+    checkpoint = torch.load(ckpt_path, map_location='cpu', weights_only=False)['state_dict']
     weight = checkpoint['reference_net.pos_embed']
     ori_size = np.sqrt(weight.shape[1] - 1).astype(int)
     new_size = (img_size[0] // model.patch_embed.patch_size[0], img_size[1] // model.patch_embed.patch_size[1])
@@ -137,7 +138,7 @@ if __name__ == "__main__":
         # args.gpu = torch.cuda.current_device()
         device = torch.device('cuda:0')
         model = TransGeo(num_frames=8, args=args)
-        ckpt_path='/home/ma293852/Project/TransGeo2022-video/result_GAMA_GeoAdapter_AVG/model_best.pth.tar'
+        ckpt_path=Path(__file__).resolve().parents[1] / "checkpoints" / "Geoadapter.pth.tar"
         checkpoint = load_checkpoint(model=model.reference_net, img_size=model.size_sat, ckpt_path=ckpt_path)
         model.load_state_dict(checkpoint, strict=True)
         model.to(device)
