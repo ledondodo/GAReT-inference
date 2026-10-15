@@ -133,10 +133,10 @@ if __name__ == "__main__":
             for i in range(sim_indexs.shape[0]):
                 f.write(",".join([folders[i]] + list(folders[sim_indexs[i]])) + "\n")
     else:
-        args = SimpleNamespace(asam=True, batch_size=6, city='all', cos=True, crop=False, cross=False, dataset='gama', dim=1000, dist_backend='nccl', dist_url='tcp://localhost:10003', epochs=100, evaluate=False, fov=0, gpu=None, lr=0.0001, mining=True, momentum=0.9, multiprocessing_distributed=True, op='sam', print_freq=10, rank=0, resume='', rho=2.5, sat_res=0, save_path='./result_GAMA_GeoAdapter_x', schedule=[120, 160], seed=None, share=False, start_epoch=0, weight_decay=0.03, workers=10, world_size=1, type='avg')
+        args = SimpleNamespace(asam=True, batch_size=6, city='all', cos=True, crop=False, cross=False, dataset='gama', dim=1000, dist_backend='nccl', dist_url='tcp://localhost:10003', epochs=100, evaluate=False, fov=0, gpu=None, lr=0.0001, mining=True, momentum=0.9, multiprocessing_distributed=True, op='sam', print_freq=10, rank=0, resume='', rho=2.5, sat_res=0, save_path='./result_GAMA_GeoAdapter_x', schedule=[120, 160], seed=None, share=False, start_epoch=0, weight_decay=0.03, workers=10, world_size=1, type='sym1')
         # args.distributed = args.world_size > 1 or args.multiprocessing_distributed
         # args.gpu = torch.cuda.current_device()
-        device = torch.device('cuda:0')
+        device = torch.device('mps')
         model = TransGeo(num_frames=8, args=args)
         ckpt_path=Path(__file__).resolve().parents[1] / "checkpoints" / "Geoadapter.pth.tar"
         checkpoint = load_checkpoint(model=model.reference_net, img_size=model.size_sat, ckpt_path=ckpt_path)
