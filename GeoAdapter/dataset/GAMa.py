@@ -4,7 +4,6 @@ from PIL import Image
 import numpy as np
 import os
 import random
-from patchify import patchify
 import time
 import pandas as pd
 from datetime import datetime
@@ -30,8 +29,15 @@ class Patchify:
         self.overlap = overlap
     
     def __call__(self, sample):
-        patches = patchify(np.array(sample), patch_size=self.patch_size, step=self.patch_size[0] if not self.overlap else self.overlap)
-        patches = patches.squeeze().reshape(49, *self.patch_size)
+        image = np.asarray(sample)
+        patch_h, patch_w, channels = self.patch_size
+        step = patch_h if not self.overlap else self.overlap
+        tiles = [
+            image[y:y + patch_h, x:x + patch_w, :]
+            for y in range(0, image.shape[0] - patch_h + 1, step)
+            for x in range(0, image.shape[1] - patch_w + 1, step)
+        ]
+        patches = np.stack(tiles).reshape(49, patch_h, patch_w, channels)
         return patches
 
 class ToTensor:
